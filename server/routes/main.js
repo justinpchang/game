@@ -92,4 +92,4 @@ router.post("/logout", (req, res) => {
   res.status(200).json({ message: "logged out" });
 });
 
-module.exports = router;
+export default router;
