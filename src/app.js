@@ -2,6 +2,7 @@ require('dotenv').config();
 
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
@@ -66,6 +67,7 @@ io.on('connection', function (socket) {
 // update express settings
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
+app.use(cors());
 app.use(cookieParser());
 
 // require passport auth

@@ -1,40 +1,15 @@
-const inputMessage = document.getElementById("inputMessage");
-const messages = document.getElementById("messages");
+import Phaser from 'phaser';
 
-window.addEventListener("keydown", (event) => {
-  if (event.which === 13) {
-    sendMessage();
-  }
-  if (event.which === 32) {
-    if (document.activeElement === inputMessage) {
-      inputMessage.value = inputMessage.value + " ";
-    }
-  }
-});
-
-function sendMessage() {
-  let message = inputMessage.value;
-  if (message) {
-    inputMessage.value = "";
-    $.ajax({
-      type: "POST",
-      url: "/submit-chatline",
-      data: {
-        message,
-        refreshToken: getCookie("refreshJwt"),
-      },
-      success: function (data) {},
-      error: function (xhr) {
-        console.log(xhr);
-      },
-    });
-  }
-}
-
-function addMessageElement(el) {
-  messages.append(el);
-  messages.lastChild.scrollIntoView();
-}
+import logoImg from './assets/logo.png';
+import tiles from './assets/map/spritesheet-extruded.png';
+import tilemap from './assets/map/map.json';
+import playerSpritesheet from './assets/spritesheets/RPG_assets.png';
+import golem from './assets/images/coppergolem.png';
+import ent from './assets/images/dark-ent.png';
+import demon from './assets/images/demon.png';
+import worm from './assets/images/giant-worm.png';
+import wolf from './assets/images/wolf.png';
+import sword from './assets/images/attack-icon.png';
 
 class BootScene extends Phaser.Scene {
   constructor() {
@@ -46,21 +21,21 @@ class BootScene extends Phaser.Scene {
 
   preload() {
     // map tiles
-    this.load.image("tiles", "assets/map/spritesheet-extruded.png");
+    this.load.image("tiles", tiles);
     // map in json format
-    this.load.tilemapTiledJSON("map", "assets/map/map.json");
+    this.load.tilemapTiledJSON("map", tilemap);
     // our two characters
-    this.load.spritesheet("player", "assets/RPG_assets.png", {
+    this.load.spritesheet("player", playerSpritesheet, {
       frameWidth: 16,
       frameHeight: 16,
     });
 
-    this.load.image("golem", "assets/images/coppergolem.png");
-    this.load.image("ent", "assets/images/dark-ent.png");
-    this.load.image("demon", "assets/images/demon.png");
-    this.load.image("worm", "assets/images/giant-worm.png");
-    this.load.image("wolf", "assets/images/wolf.png");
-    this.load.image("sword", "assets/images/attack-icon.png");
+    this.load.image("golem", golem);
+    this.load.image("ent", ent);
+    this.load.image("demon", demon);
+    this.load.image("worm", worm);
+    this.load.image("wolf", wolf);
+    this.load.image("sword", sword);
   }
 
   create() {
@@ -76,7 +51,7 @@ class WorldScene extends Phaser.Scene {
   }
 
   create() {
-    this.socket = io();
+    this.socket = io('localhost:3000');
     this.otherPlayers = this.physics.add.group();
 
     // create map
@@ -140,25 +115,6 @@ class WorldScene extends Phaser.Scene {
         );
       }.bind(this)
     );
-
-    this.socket.on("new message", (data) => {
-      const usernameSpan = document.createElement("span");
-      const usernameText = document.createTextNode(data.username);
-      usernameSpan.className = "username";
-      usernameSpan.appendChild(usernameText);
-
-      const messageBodySpan = document.createElement("span");
-      const messageBodyText = document.createTextNode(data.message);
-      messageBodySpan.className = "messageBody";
-      messageBodySpan.appendChild(messageBodyText);
-
-      const messageLi = document.createElement("li");
-      messageLi.setAttribute("username", data.username);
-      messageLi.append(usernameSpan);
-      messageLi.append(messageBodySpan);
-
-      addMessageElement(messageLi);
-    });
   }
 
   createMap() {
@@ -403,8 +359,7 @@ class WorldScene extends Phaser.Scene {
 
       if (
         Phaser.Input.Keyboard.JustDown(this.cursors.space) &&
-        !this.attacking &&
-        document.activeElement !== inputMessage
+        !this.attacking
       ) {
         this.attacking = true;
         setTimeout(() => {
@@ -443,7 +398,7 @@ class WorldScene extends Phaser.Scene {
   }
 }
 
-let config = {
+const config = {
   type: Phaser.AUTO,
   parent: "content",
   width: 320,
@@ -461,4 +416,5 @@ let config = {
   },
   scene: [BootScene, WorldScene],
 };
-let game = new Phaser.Game(config);
+
+const game = new Phaser.Game(config);
