@@ -1,4 +1,3 @@
-// reads in our .env file and makes those values available as environment letiables
 require('dotenv').config();
 
 import express from 'express';

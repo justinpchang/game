@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "@babel/runtime": "^7.14.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
@@ -19,14 +20,20 @@
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.14.3",
     "@babel/core": "^7.14.3",
     "@babel/node": "^7.14.2",
-    "@babel/preset-env": "^7.14.4"
+    "@babel/plugin-transform-runtime": "^7.14.3",
+    "@babel/preset-env": "^7.14.4",
+    "@babel/register": "^7.13.16"
   },
   "scripts": {
+    "clean": "rm -rf build && mkdir build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "dev": "nodemon --exec babel-node ./server/app.js"
+    "start": "node ./dist/app.js",
+    "dev": "nodemon --exec babel-node ./src/app.js",
+    "build-server": "babel -d ./dist ./src -s --copy-files --ignore=./src/public",
+    "build": "npm run clean && npm run build-server"
   },
   "keywords": [],
   "author": "",
