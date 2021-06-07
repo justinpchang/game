@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+  "engines": {
+    "node": "14.x"
+  },
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "bcrypt": "^5.0.0",
@@ -34,7 +37,8 @@
     "start": "node ./dist/app.js",
     "dev": "nodemon --exec babel-node ./src/app.js",
     "build-server": "babel -d ./dist ./src -s --copy-files --ignore=./src/public",
-    "build": "npm run clean && npm run build-server"
+    "build": "npm run clean && npm run build-server",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": ""
