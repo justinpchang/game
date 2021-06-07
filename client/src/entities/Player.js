@@ -1,10 +1,13 @@
 import Phaser from 'phaser';
 
+import {
+  SCALE,
+  MOVE_SPEED,
+} from '../constants';
+
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(socket, scene, x, y, texture, frame) {
     super(scene, x, y, texture, frame);
-
-    this.SPEED = 80;
 
     // update server with info
     this.socket = socket;
@@ -24,44 +27,56 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const upDown = keyboard.addKey('W').isDown;
     const downDown = keyboard.addKey('S').isDown;
 
-    let velocityX = 0;
-    let velocityY = 0;
+    let movingX = false;
+    let theta = null;
 
     if (leftDown) {
       this.anims.play('player-move-left', true);
       this.flipX = true;
       
-      velocityX = -this.SPEED;
+      movingX = true;
+      theta = -Math.PI;
     } else if (rightDown) {
       this.anims.play('player-move-right', true);
       this.flipX = false;
 
-      velocityX = this.SPEED;
+      movingX = true;
+      theta = 0;
     }
 
     if (upDown) {
-      if (velocityX === 0) {
+      if (!movingX) {
         this.anims.play('player-move-up', true);
       }
       
-      velocityY = -this.SPEED;
+      if (theta == null) {
+        theta = -Math.PI / 2;
+      } else {
+        theta += (theta ? 1 : -1) * Math.PI / 4;
+      }
     } else if (downDown) {
-      if (velocityX === 0) {
+      if (!movingX) {
         this.anims.play('player-move-down', true);
       }
 
-      velocityY = this.SPEED;
+      if (theta == null) {
+        theta = Math.PI / 2;
+      } else {
+        theta -= (theta ? 1 : -1) * Math.PI / 4;
+      }
     }
+
+    let velR = new Phaser.Math.Vector2();
+    velR.setToPolar(this.rotation + theta, MOVE_SPEED);
+    this.setVelocity(velR.x, velR.y);
 
     if (!(leftDown || rightDown || upDown || downDown)) {
       // play idle animation
       this.anims.stop();
       this.anims.play('player-idle');
 
-      velocityX = velocityY = 0;
+      this.setVelocity(0);
     }
-
-    this.setVelocity(velocityX, velocityY);
 
     // emit player movement
     const x = this.x;
@@ -73,7 +88,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         y !== this.oldPosition.y ||
         flipX !== this.oldPosition.flipX)
     ) {
-      this.socket.emit("playerMovement", { x, y, flipX });
+      this.socket.emit('playerMovement', { x, y, flipX });
     }
     this.oldPosition = { x, y, flipX };
   }
@@ -81,6 +96,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
 Phaser.GameObjects.GameObjectFactory.register('player', function (socket, x, y, texture, frame) {
   let sprite = new Player(socket, this.scene, x, y, texture, frame);
+  sprite.setScale(SCALE);
   this.displayList.add(sprite);
   this.updateList.add(sprite);
   this.scene.physics.world.enableBody(sprite, Phaser.Physics.Arcade.DYNAMIC_BODY);

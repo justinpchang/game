@@ -3,6 +3,11 @@ import Phaser from 'phaser';
 import '../entities/Player';
 import createPlayerAnims from '../anims/PlayerAnims';
 
+import {
+  SCALE,
+  ROT_SPEED,
+} from '../constants';
+
 class WorldScene extends Phaser.Scene {
   constructor() {
     super({
@@ -21,8 +26,8 @@ class WorldScene extends Phaser.Scene {
 
     let tiles = this.map.addTilesetImage('spritesheet', 'tiles', 16, 16, 1, 2);
 
-    this.map.createStaticLayer('Grass', tiles, 0, 0);
-    const obstaclesLayer = this.map.createStaticLayer('Obstacles', tiles, 0, 0);
+    this.map.createLayer('Grass', tiles, 0, 0).setScale(SCALE);
+    const obstaclesLayer = this.map.createLayer('Obstacles', tiles, 0, 0).setScale(SCALE);
     obstaclesLayer.setCollisionByProperty({ collides: true });
 
     // create animations
@@ -35,7 +40,7 @@ class WorldScene extends Phaser.Scene {
         Object.keys(players).forEach(
           function (id) {
             if (players[id].playerId === this.socket.id) {
-              this.player = this.add.player(this.socket, 50, 50, 'player');
+              this.player = this.add.player(this.socket, 100, 100, 'player');
               this.cameras.main.startFollow(this.player, true);
               this.physics.add.collider(this.player, obstaclesLayer);
             } else {
@@ -87,7 +92,7 @@ class WorldScene extends Phaser.Scene {
       playerInfo.y,
       'player',
       9
-    );
+    ).setScale(SCALE);
     otherPlayer.playerId = playerInfo.playerId;
     this.otherPlayers.add(otherPlayer);
   }
@@ -95,6 +100,17 @@ class WorldScene extends Phaser.Scene {
   update() {
     if (this.player) {
       this.player.update(this.input.keyboard);
+    }
+
+    // update camera rotation
+    const ccwDown = this.input.keyboard.addKey('Q').isDown;
+    const cwDown = this.input.keyboard.addKey('E').isDown;
+    if (cwDown) {
+      this.cameras.main.rotation -= ROT_SPEED;
+      this.player.rotation += ROT_SPEED;
+    } else if (ccwDown) {
+      this.cameras.main.rotation += ROT_SPEED;
+      this.player.rotation -= ROT_SPEED;
     }
   }
 }

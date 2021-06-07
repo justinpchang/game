@@ -1,13 +1,15 @@
 import Phaser from 'phaser';
+
 import BootScene from './scenes/Boot';
 import WorldScene from './scenes/World';
+
+import { SCALE } from './constants';
 
 const config = {
   type: Phaser.AUTO,
   parent: "content",
-  width: 320,
-  height: 240,
-  zoom: 3,
+  width: 320 * SCALE,
+  height: 240 * SCALE,
   pixelArt: true,
   physics: {
     default: "arcade",
