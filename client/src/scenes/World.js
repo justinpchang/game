@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
 
-import Player from '../player/Player';
+import '../entities/Player';
+import createPlayerAnims from '../anims/PlayerAnims';
 
 class WorldScene extends Phaser.Scene {
   constructor() {
     super({
-      key: "WorldScene",
+      key: 'WorldScene',
     });
   }
 
@@ -15,30 +16,21 @@ class WorldScene extends Phaser.Scene {
 
     // create map
     this.map = this.make.tilemap({
-      key: "map",
+      key: 'map',
     });
 
-    // first parameter is the name of the tilemap in tiled
-    let tiles = this.map.addTilesetImage("spritesheet", "tiles", 16, 16, 1, 2);
+    let tiles = this.map.addTilesetImage('spritesheet', 'tiles', 16, 16, 1, 2);
 
-    // creating the layers
-    this.map.createStaticLayer("Grass", tiles, 0, 0);
-    const obstaclesLayer = this.map.createStaticLayer("Obstacles", tiles, 0, 0);
+    this.map.createStaticLayer('Grass', tiles, 0, 0);
+    const obstaclesLayer = this.map.createStaticLayer('Obstacles', tiles, 0, 0);
     obstaclesLayer.setCollisionByProperty({ collides: true });
 
-    // don't go out of the map
-    this.physics.world.bounds.width = this.map.widthInPixels;
-    this.physics.world.bounds.height = this.map.heightInPixels;
-
-    // create player animations
-    this.createAnimations();
-
-    // user input
-    this.cursors = this.input.keyboard.createCursorKeys();
+    // create animations
+    createPlayerAnims(this.anims);
 
     // listen for web socket events
     this.socket.on(
-      "currentPlayers",
+      'currentPlayers',
       function (players) {
         Object.keys(players).forEach(
           function (id) {
@@ -55,14 +47,14 @@ class WorldScene extends Phaser.Scene {
     );
 
     this.socket.on(
-      "newPlayer",
+      'newPlayer',
       function (playerInfo) {
         this.addOtherPlayers(playerInfo);
       }.bind(this)
     );
 
     this.socket.on(
-      "disconnect",
+      'disconnect',
       function (playerId) {
         this.otherPlayers.getChildren().forEach(
           function (player) {
@@ -75,7 +67,7 @@ class WorldScene extends Phaser.Scene {
     );
 
     this.socket.on(
-      "playerMoved",
+      'playerMoved',
       function (playerInfo) {
         this.otherPlayers.getChildren().forEach(
           function (player) {
@@ -89,51 +81,11 @@ class WorldScene extends Phaser.Scene {
     );
   }
 
-  createAnimations() {
-    //  animation with key 'left', we don't need left and right as we will use one and flip the sprite
-    this.anims.create({
-      key: "left",
-      frames: this.anims.generateFrameNumbers("player", {
-        frames: [1, 7, 1, 13],
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    // animation with key 'right'
-    this.anims.create({
-      key: "right",
-      frames: this.anims.generateFrameNumbers("player", {
-        frames: [1, 7, 1, 13],
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "up",
-      frames: this.anims.generateFrameNumbers("player", {
-        frames: [2, 8, 2, 14],
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "down",
-      frames: this.anims.generateFrameNumbers("player", {
-        frames: [0, 6, 0, 12],
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-  }
-
   addOtherPlayers(playerInfo) {
     const otherPlayer = this.add.sprite(
       playerInfo.x,
       playerInfo.y,
-      "player",
+      'player',
       9
     );
     otherPlayer.playerId = playerInfo.playerId;

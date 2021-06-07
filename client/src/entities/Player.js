@@ -11,6 +11,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.socket.emit("playerMovement", { x, y, flipX: false });
 
     // play idle animation
+    this.anims.play('player-idle', true);
   }
 
   update(keyboard) {
@@ -27,12 +28,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     let velocityY = 0;
 
     if (leftDown) {
-      this.anims.play('left', true);
+      this.anims.play('player-move-left', true);
       this.flipX = true;
       
       velocityX = -this.SPEED;
     } else if (rightDown) {
-      this.anims.play('right', true);
+      this.anims.play('player-move-right', true);
       this.flipX = false;
 
       velocityX = this.SPEED;
@@ -40,13 +41,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     if (upDown) {
       if (velocityX === 0) {
-        this.anims.play('up', true);
+        this.anims.play('player-move-up', true);
       }
       
       velocityY = -this.SPEED;
     } else if (downDown) {
       if (velocityX === 0) {
-        this.anims.play('down', true);
+        this.anims.play('player-move-down', true);
       }
 
       velocityY = this.SPEED;
@@ -55,6 +56,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (!(leftDown || rightDown || upDown || downDown)) {
       // play idle animation
       this.anims.stop();
+      this.anims.play('player-idle');
 
       velocityX = velocityY = 0;
     }
