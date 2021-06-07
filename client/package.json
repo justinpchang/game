@@ -5,8 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "webpack --config webpack/prod.js && cp -a dist/. ./",
-    "start": "webpack-dev-server --config webpack/base.js --open",
-    "postinstall": "npm run build"
+    "start": "webpack-dev-server --config webpack/base.js --open"
   },
   "repository": {
     "type": "git",

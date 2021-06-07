@@ -5,7 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const API_URL = process.env.API_URL;
-console.log(API_URL);
 
 module.exports = {
   mode: 'development',
