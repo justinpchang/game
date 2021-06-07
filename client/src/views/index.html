@@ -22,6 +22,7 @@
     <a href="/forgot-password.html">Forgot password? Reset it here.</a>
   </form>
   <script>
+    var API_URL = "<%= htmlWebpackPlugin.options.API_URL %>";
     function signIn() {
       var data = {
         email: document.forms[0].elements[0].value,
@@ -29,7 +30,7 @@
       };
       $.ajax({
         type: 'POST',
-        url: 'http://localhost:3000/login',
+        url: API_URL + '/login',
         data,
         success: function (data) {
           window.location.replace('/game.html');

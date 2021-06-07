@@ -24,6 +24,7 @@
     <a href="/index.html">Already have an account? Login here.</a>
   </form>
   <script>
+    var API_URL = "<%= htmlWebpackPlugin.options.API_URL %>";
     function signUp() {
       var data = {
         email: document.forms[0].elements[0].value,
