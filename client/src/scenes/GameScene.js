@@ -8,14 +8,16 @@ import {
   ROT_SPEED,
 } from '../constants';
 
-class WorldScene extends Phaser.Scene {
+class GameScene extends Phaser.Scene {
   constructor() {
     super({
-      key: 'WorldScene',
+      key: 'GameScene',
     });
   }
 
   create() {
+    this.scene.run('UIScene');
+
     this.socket = io('localhost:3000');
     this.otherPlayers = this.physics.add.group();
 
@@ -127,4 +129,4 @@ class WorldScene extends Phaser.Scene {
   }
 }
 
-export default WorldScene;
+export default GameScene;

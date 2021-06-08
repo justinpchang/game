@@ -12,6 +12,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.knives = null;
     this.nextShotTime = 0;
+    this.keepShooting = false;
 
     // update server with info
     this.socket = socket;
@@ -54,13 +55,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    const cursorKeys = keyboard.createCursorKeys();
-
     const leftDown = keyboard.addKey('A').isDown;
     const rightDown = keyboard.addKey('D').isDown;
     const upDown = keyboard.addKey('W').isDown;
     const downDown = keyboard.addKey('S').isDown;
     const shootDown = keyboard.addKey('Space').isDown;
+    const shootToggle = Phaser.Input.Keyboard.JustDown(keyboard.addKey('I'));
 
     let movingX = false;
     let theta = null;
@@ -128,8 +128,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.oldPosition = { x, y, flipX };
 
     // handle knife
-    if (shootDown) {
+    if (shootDown || this.keepShooting) {
       this.throwKnife(mousePointer);
+    }
+
+    if (shootToggle) {
+      this.keepShooting = !this.keepShooting;
     }
   }
 }

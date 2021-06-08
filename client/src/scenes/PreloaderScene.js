@@ -5,10 +5,11 @@ import tiles from '../assets/map/spritesheet-extruded.png';
 import tilemap from '../assets/map/map.json';
 import playerSpritesheet from '../assets/spritesheets/RPG_assets.png';
 import knife from '../assets/weapons/knife.png';
-class BootScene extends Phaser.Scene {
+
+class PreloaderScene extends Phaser.Scene {
   constructor() {
     super({
-      key: 'BootScene',
+      key: 'PreloaderScene',
       active: true,
     });
   }
@@ -28,8 +29,8 @@ class BootScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start('WorldScene');
+    this.scene.start('GameScene');
   }
 }
 
-export default BootScene;
+export default PreloaderScene;
