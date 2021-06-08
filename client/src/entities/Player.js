@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import _ from 'lodash';
 
 import {
   SCALE,
@@ -9,6 +10,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(socket, scene, x, y, texture, frame) {
     super(scene, x, y, texture, frame);
 
+    this.knives = null;
+    this.nextShotTime = 0;
+
     // update server with info
     this.socket = socket;
     this.socket.emit("playerMovement", { x, y, flipX: false });
@@ -17,15 +21,46 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.play('player-idle', true);
   }
 
-  update(keyboard) {
-    if (!keyboard) {
+  throwKnife = (mousePointer) => {
+    if (!this.knives) {
       return;
     }
+
+    // restrict fire rate
+    if (this.nextShotTime < Date.now()) {
+      // calculate throw angle
+      const theta = Phaser.Math.Angle.Between(this.x, this.y, mousePointer.worldX, mousePointer.worldY);
+      let velR = new Phaser.Math.Vector2();
+      velR.setToPolar(theta, MOVE_SPEED * 1.5);
+
+      // fire bullet
+      const knife = this.knives.get(this.x, this.y, 'knife');
+      if (!knife) {
+        return;
+      }
+      knife.rotation = theta;
+      knife.setScale(SCALE);
+      knife.setActive(true);
+      knife.setVisible(true);
+      knife.setVelocity(velR.x, velR.y);
+
+      // set time for next bullet
+      this.nextShotTime = Date.now() + 300;
+    }
+  }
+
+  update({ keyboard, mousePointer }) {
+    if (!keyboard || !mousePointer) {
+      return;
+    }
+
+    const cursorKeys = keyboard.createCursorKeys();
 
     const leftDown = keyboard.addKey('A').isDown;
     const rightDown = keyboard.addKey('D').isDown;
     const upDown = keyboard.addKey('W').isDown;
     const downDown = keyboard.addKey('S').isDown;
+    const shootDown = keyboard.addKey('Space').isDown;
 
     let movingX = false;
     let theta = null;
@@ -91,6 +126,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.socket.emit('playerMovement', { x, y, flipX });
     }
     this.oldPosition = { x, y, flipX };
+
+    // handle knife
+    if (shootDown) {
+      this.throwKnife(mousePointer);
+    }
   }
 }
 

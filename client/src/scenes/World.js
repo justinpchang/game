@@ -33,6 +33,13 @@ class WorldScene extends Phaser.Scene {
     // create animations
     createPlayerAnims(this.anims);
 
+    // create knives
+    this.knives = this.physics.add.group({
+      classType: Phaser.Physics.Arcade.Image,
+      maxSize: 100,
+    });
+    this.physics.add.collider(this.knives, obstaclesLayer, this.handleKnifeObstacleCollision, undefined, this);
+
     // listen for web socket events
     this.socket.on(
       'currentPlayers',
@@ -41,6 +48,7 @@ class WorldScene extends Phaser.Scene {
           function (id) {
             if (players[id].playerId === this.socket.id) {
               this.player = this.add.player(this.socket, 100, 100, 'player');
+              this.player.knives = this.knives;
               this.cameras.main.startFollow(this.player, true);
               this.physics.add.collider(this.player, obstaclesLayer);
             } else {
@@ -86,6 +94,10 @@ class WorldScene extends Phaser.Scene {
     );
   }
 
+  handleKnifeObstacleCollision(obj1, obj2) {
+    this.knives.killAndHide(obj1);
+  }
+
   addOtherPlayers(playerInfo) {
     const otherPlayer = this.add.sprite(
       playerInfo.x,
@@ -99,7 +111,7 @@ class WorldScene extends Phaser.Scene {
 
   update() {
     if (this.player) {
-      this.player.update(this.input.keyboard);
+      this.player.update(this.input);
     }
 
     // update camera rotation
