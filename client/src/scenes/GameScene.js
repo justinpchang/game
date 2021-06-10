@@ -45,54 +45,47 @@ class GameScene extends Phaser.Scene {
     // listen for web socket events
     this.socket.on(
       'currentPlayers',
-      function (players) {
-        Object.keys(players).forEach(
-          function (id) {
-            if (players[id].playerId === this.socket.id) {
-              this.player = this.add.player(this.socket, 100, 100, 'player');
-              this.player.knives = this.knives;
-              this.cameras.main.startFollow(this.player, true);
-              this.physics.add.collider(this.player, obstaclesLayer);
-            } else {
-              this.addOtherPlayers(players[id]);
-            }
-          }.bind(this)
-        );
-      }.bind(this)
+      (players) => {
+        Object.keys(players).forEach((id) => {
+          if (players[id].playerId === this.socket.id) {
+            this.player = this.add.player(this.socket, players[id].x, players[id].y, 'player');
+            this.player.knives = this.knives;
+            this.cameras.main.startFollow(this.player, true);
+            this.physics.add.collider(this.player, obstaclesLayer);
+          } else {
+            this.addOtherPlayer(players[id]);
+          }
+        });
+      }
     );
 
     this.socket.on(
       'newPlayer',
-      function (playerInfo) {
-        this.addOtherPlayers(playerInfo);
-      }.bind(this)
+      (playerInfo) => {
+        this.addOtherPlayer(playerInfo);
+      }
     );
 
     this.socket.on(
       'disconnect',
       (playerId) => {
-        this.otherPlayers.getChildren().forEach(
-          function (player) {
-            if (playerId === player.playerId) {
-              player.destroy();
-            }
-          }.bind(this)
-        );
+        const player = this.getOtherPlayer(playerId);
+        if (player) {
+          player.destroy();
+        }
       }
     );
 
     this.socket.on(
       'playerMoved',
-      function (playerInfo) {
-        this.otherPlayers.getChildren().forEach(
-          function (player) {
-            if (playerInfo.playerId === player.playerId) {
-              player.flipX = playerInfo.flipX;
-              player.setPosition(playerInfo.x, playerInfo.y);
-            }
-          }.bind(this)
-        );
-      }.bind(this)
+      (playerInfo) => {
+        let player = this.getOtherPlayer(playerInfo.playerId);
+        if (!player) {
+          player = this.addOtherPlayer(playerInfo.playerId);
+        }
+        player.flipX = playerInfo.flipX;
+        player.setPosition(playerInfo.x, playerInfo.y);
+      }
     );
 
     this.socket.on(
@@ -115,7 +108,11 @@ class GameScene extends Phaser.Scene {
     this.knives.killAndHide(obj1);
   }
 
-  addOtherPlayers(playerInfo) {
+  getOtherPlayer(playerId) {
+    return this.otherPlayers.getChildren().find(p => p.playerId === playerId);
+  }
+
+  addOtherPlayer(playerInfo) {
     const otherPlayer = this.add.sprite(
       playerInfo.x,
       playerInfo.y,
@@ -124,6 +121,7 @@ class GameScene extends Phaser.Scene {
     ).setScale(SCALE);
     otherPlayer.playerId = playerInfo.playerId;
     this.otherPlayers.add(otherPlayer);
+    return otherPlayer;
   }
 
   update() {

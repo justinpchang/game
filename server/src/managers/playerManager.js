@@ -12,7 +12,10 @@ class PlayerManager {
   }
 
   updatePlayer(id, updatedPlayerInfo) {
-    this.players[id] = updatedPlayerInfo;
+    this.players[id] = {
+      ...this.players[id],
+      ...updatedPlayerInfo,
+    };
   }
 }
 
