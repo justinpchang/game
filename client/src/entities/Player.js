@@ -12,6 +12,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.knives = null;
     this.nextShotTime = 0;
+    this.isShooting = false;
     this.keepShooting = false;
 
     // update server with info
@@ -26,6 +27,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (!this.knives) {
       return;
     }
+
+    this.isShooting = true;
 
     // restrict fire rate
     if (this.nextShotTime < Date.now()) {
@@ -77,13 +80,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     let theta = null;
 
     if (leftDown) {
-      this.anims.play('player-move-left', true);
+      this.anims.play('player-move-side', true);
       this.flipX = true;
       
       movingX = true;
       theta = -Math.PI;
     } else if (rightDown) {
-      this.anims.play('player-move-right', true);
+      this.anims.play('player-move-side', true);
       this.flipX = false;
 
       movingX = true;
@@ -141,6 +144,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     // handle knife
     if (shootDown || this.keepShooting) {
       this.throwKnife(mousePointer);
+    } else {
+      this.isShooting = false;
     }
 
     if (shootToggle) {

@@ -1,48 +1,81 @@
-import Phaser from 'phaser';
-
 const createPlayerAnims = (anims) => {
   anims.create({
-    key: "player-move-left",
-    frames: anims.generateFrameNumbers("player", {
+    key: 'player-move-left',
+    frames: anims.generateFrameNumbers('player', {
       frames: [1, 7, 1, 13],
     }),
-    frameRate: 10,
+    frameRate: 6,
     repeat: -1,
   });
 
-  // animation with key 'right'
   anims.create({
-    key: "player-move-right",
-    frames: anims.generateFrameNumbers("player", {
+    key: 'player-move-right',
+    frames: anims.generateFrameNumbers('player', {
       frames: [1, 7, 1, 13],
     }),
-    frameRate: 10,
+    frameRate: 6,
     repeat: -1,
   });
 
   anims.create({
-    key: "player-move-up",
-    frames: anims.generateFrameNumbers("player", {
-      frames: [2, 8, 2, 14],
+    key: 'player-move-side',
+    frames: anims.generateFrameNumbers('rotmgPlayer', {
+      frames: [36, 37],
     }),
-    frameRate: 10,
+    frameRate: 6,
+    repeat: -1,
+  })
+
+  anims.create({
+    key: 'player-move-up',
+    frames: anims.generateFrameNumbers('rotmgPlayer', {
+      frames: [48, 49, 50],
+    }),
+    frameRate: 6,
     repeat: -1,
   });
 
   anims.create({
-    key: "player-move-down",
-    frames: anims.generateFrameNumbers("player", {
-      frames: [0, 6, 0, 12],
+    key: 'player-move-down',
+    frames: anims.generateFrameNumbers('rotmgPlayer', {
+      frames: [42, 43, 44],
     }),
-    frameRate: 10,
+    frameRate: 6,
     repeat: -1,
   });
 
   anims.create({
     key: 'player-idle',
-    frames: anims.generateFrameNumbers('player', {
-      frames: [0],
+    frames: anims.generateFrameNumbers('rotmgPlayer', {
+      frames: [42],
     }),
+  });
+
+  anims.create({
+    key: 'player-shoot-side',
+    frames: anims.generateFrameNumbers('rotmgPlayer', {
+      frames: [40, 41],
+    }),
+    frameRate: 6,
+    repeat: -1,
+  });
+
+  anims.create({
+    key: 'player-shoot-up',
+    frames: anims.generateFrameNumbers('rotmgPlayer', {
+      frames: [52, 53],
+    }),
+    frameRate: 6,
+    repeat: -1,
+  });
+
+  anims.create({
+    key: 'player-shoot-down',
+    frames: anims.generateFrameNumbers('rotmgPlayer', {
+      frames: [46, 47],
+    }),
+    frameRate: 6,
+    repeat: -1,
   });
 };
 
