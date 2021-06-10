@@ -16,7 +16,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     // update server with info
     this.socket = socket;
-    this.socket.emit("playerMovement", { x, y, flipX: false });
+    //this.socket.emit("playerMovement", { x, y, flipX: false });
 
     // play idle animation
     this.anims.play('player-idle', true);
@@ -40,10 +40,21 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         return;
       }
       knife.rotation = theta;
+      console.log(knife.rotation);
       knife.setScale(SCALE);
       knife.setActive(true);
       knife.setVisible(true);
       knife.setVelocity(velR.x, velR.y);
+
+      // emit shoot event
+      this.socket.emit('playerShoot', {
+        x: knife.x,
+        y: knife.y,
+        rotation: knife.rotation,
+        scale: knife.scale,
+        velocityX: velR.x,
+        velocityY: velR.y,
+      });
 
       // set time for next bullet
       this.nextShotTime = Date.now() + 300;

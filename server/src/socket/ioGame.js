@@ -29,6 +29,11 @@ class IoGame {
         });
         socket.broadcast.emit('playerMoved', playerManager.players[socket.id]);
       });
+
+      // When player shoots, broadcast
+      socket.on('playerShoot', (shootData) => {
+        socket.broadcast.emit('playerShot', shootData);
+      });
     });
   }
 }

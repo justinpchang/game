@@ -70,7 +70,7 @@ class GameScene extends Phaser.Scene {
 
     this.socket.on(
       'disconnect',
-      function (playerId) {
+      (playerId) => {
         this.otherPlayers.getChildren().forEach(
           function (player) {
             if (playerId === player.playerId) {
@@ -78,7 +78,7 @@ class GameScene extends Phaser.Scene {
             }
           }.bind(this)
         );
-      }.bind(this)
+      }
     );
 
     this.socket.on(
@@ -93,6 +93,21 @@ class GameScene extends Phaser.Scene {
           }.bind(this)
         );
       }.bind(this)
+    );
+
+    this.socket.on(
+      'playerShot',
+      (shotInfo) => {
+        const knife = this.knives.get(shotInfo.x, shotInfo.y, 'knife');
+        if (!knife) {
+          return;
+        }
+        knife.setRotation(shotInfo.rotation);
+        knife.setScale(shotInfo.scale);
+        knife.setVelocity(shotInfo.velocityX, shotInfo.velocityY);
+        knife.setVisible(true);
+        knife.setActive(true);
+      }
     );
   }
 
@@ -114,17 +129,17 @@ class GameScene extends Phaser.Scene {
   update() {
     if (this.player) {
       this.player.update(this.input);
-    }
 
-    // update camera rotation
-    const ccwDown = this.input.keyboard.addKey('Q').isDown;
-    const cwDown = this.input.keyboard.addKey('E').isDown;
-    if (cwDown) {
-      this.cameras.main.rotation -= ROT_SPEED;
-      this.player.rotation += ROT_SPEED;
-    } else if (ccwDown) {
-      this.cameras.main.rotation += ROT_SPEED;
-      this.player.rotation -= ROT_SPEED;
+      // update camera rotation
+      const ccwDown = this.input.keyboard.addKey('Q').isDown;
+      const cwDown = this.input.keyboard.addKey('E').isDown;
+      if (cwDown) {
+        this.cameras.main.rotation -= ROT_SPEED;
+        this.player.rotation += ROT_SPEED;
+      } else if (ccwDown) {
+        this.cameras.main.rotation += ROT_SPEED;
+        this.player.rotation -= ROT_SPEED;
+      }
     }
   }
 }
