@@ -102,6 +102,20 @@ class GameScene extends Phaser.Scene {
         knife.setActive(true);
       }
     );
+
+    // capture pointer and get custom cursor
+    this.cursor = this.add.sprite(0, 0, 'cursor');
+    this.physics.world.enableBody(this.cursor, Phaser.Physics.Arcade.DYNAMIC_BODY);
+    this.physics.world.enable(this.cursor);
+    this.input.on('pointerdown', () => {
+      this.input.mouse.requestPointerLock();
+    });
+    this.input.on('pointermove', (pointer) => {
+      if (this.input.mouse.locked) {
+        this.cursor.x += pointer.movementX;
+        this.cursor.y += pointer.movementY;
+      }
+    });
   }
 
   handleKnifeObstacleCollision(obj1, obj2) {

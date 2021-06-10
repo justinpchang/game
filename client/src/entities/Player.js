@@ -10,6 +10,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(socket, scene, x, y, texture, frame) {
     super(scene, x, y, texture, frame);
 
+    this.scene = scene;
     this.knives = null;
     this.nextShotTime = 0;
     this.isShooting = false;
@@ -33,7 +34,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     // restrict fire rate
     if (this.nextShotTime < Date.now()) {
       // calculate throw angle
-      const theta = Phaser.Math.Angle.Between(this.x, this.y, mousePointer.worldX, mousePointer.worldY);
+      const theta = Phaser.Math.Angle.Between(this.x, this.y, this.scene.cursor.x, this.scene.cursor.y);
       let velR = new Phaser.Math.Vector2();
       velR.setToPolar(theta, MOVE_SPEED * 1.5);
 
@@ -43,7 +44,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         return;
       }
       knife.rotation = theta;
-      console.log(knife.rotation);
       knife.setScale(SCALE);
       knife.setActive(true);
       knife.setVisible(true);
@@ -118,6 +118,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     let velR = new Phaser.Math.Vector2();
     velR.setToPolar(this.rotation + theta, MOVE_SPEED);
     this.setVelocity(velR.x, velR.y);
+    if (this.scene && this.scene.cursor) {
+      this.scene.cursor.body.setVelocity(velR.x, velR.y);
+    }
 
     if (!(leftDown || rightDown || upDown || downDown)) {
       // play idle animation
@@ -125,6 +128,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.anims.play('player-idle');
 
       this.setVelocity(0);
+      if (this.scene && this.scene.cursor) {
+        this.scene.cursor.body.setVelocity(0);
+      }
     }
 
     // emit player movement
