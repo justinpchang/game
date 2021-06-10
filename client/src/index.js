@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 
 import PreloaderScene from './scenes/PreloaderScene';
-import GameScene from './scenes/GameScene';
+//import GameScene from './scenes/GameScene';
+import GameScene from './scenes/NewGameScene';
 import UIScene from './scenes/UIScene';
 
 import { SCALE } from './constants';
