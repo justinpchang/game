@@ -6,6 +6,7 @@ import createPlayerAnims from '../anims/PlayerAnims';
 import {
   SCALE,
   ROT_SPEED,
+  USE_CUSTOM_CURSOR,
 } from '../constants';
 
 class GameScene extends Phaser.Scene {
@@ -104,12 +105,17 @@ class GameScene extends Phaser.Scene {
     );
 
     // capture pointer and get custom cursor
-    this.cursor = this.add.sprite(0, 0, 'cursor');
-    this.physics.world.enableBody(this.cursor, Phaser.Physics.Arcade.DYNAMIC_BODY);
-    this.physics.world.enable(this.cursor);
-    this.input.on('pointerdown', () => {
-      this.input.mouse.requestPointerLock();
-    });
+    if (USE_CUSTOM_CURSOR) {
+      this.cursor = this.add.sprite(0, 0, 'cursor');
+      this.physics.world.enableBody(
+        this.cursor,
+        Phaser.Physics.Arcade.DYNAMIC_BODY
+      );
+      this.physics.world.enable(this.cursor);
+      this.input.on('pointerdown', () => {
+        this.input.mouse.requestPointerLock();
+      });
+    }
     this.input.on('pointermove', (pointer) => {
       if (this.input.mouse.locked) {
         this.cursor.x += pointer.movementX;
@@ -147,9 +153,11 @@ class GameScene extends Phaser.Scene {
       const cwDown = this.input.keyboard.addKey('E').isDown;
       if (cwDown) {
         this.cameras.main.rotation -= ROT_SPEED;
+        this.cursor.rotation += ROT_SPEED;
         this.player.rotation += ROT_SPEED;
       } else if (ccwDown) {
         this.cameras.main.rotation += ROT_SPEED;
+        this.cursor.rotation -= ROT_SPEED;
         this.player.rotation -= ROT_SPEED;
       }
     }

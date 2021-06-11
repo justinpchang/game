@@ -4,6 +4,7 @@ import _ from 'lodash';
 import {
   SCALE,
   MOVE_SPEED,
+  USE_CUSTOM_CURSOR,
 } from '../constants';
 
 class Player extends Phaser.Physics.Arcade.Sprite {
@@ -18,7 +19,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     // update server with info
     this.socket = socket;
-    //this.socket.emit("playerMovement", { x, y, flipX: false });
 
     // play idle animation
     this.anims.play('player-idle', true);
@@ -34,7 +34,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     // restrict fire rate
     if (this.nextShotTime < Date.now()) {
       // calculate throw angle
-      const theta = Phaser.Math.Angle.Between(this.x, this.y, this.scene.cursor.x, this.scene.cursor.y);
+      const targetX = USE_CUSTOM_CURSOR ? this.scene.cursor.x : mousePointer.worldX;
+      const targetY = USE_CUSTOM_CURSOR ? this.scene.cursor.y : mousePointer.worldY;
+      const theta = Phaser.Math.Angle.Between(this.x, this.y, targetX, targetY);
       let velR = new Phaser.Math.Vector2();
       velR.setToPolar(theta, MOVE_SPEED * 1.5);
 
@@ -118,7 +120,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     let velR = new Phaser.Math.Vector2();
     velR.setToPolar(this.rotation + theta, MOVE_SPEED);
     this.setVelocity(velR.x, velR.y);
-    if (this.scene && this.scene.cursor) {
+    if (USE_CUSTOM_CURSOR && this.scene && this.scene.cursor) {
       this.scene.cursor.body.setVelocity(velR.x, velR.y);
     }
 
@@ -128,7 +130,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.anims.play('player-idle');
 
       this.setVelocity(0);
-      if (this.scene && this.scene.cursor) {
+      if (USE_CUSTOM_CURSOR && this.scene && this.scene.cursor) {
         this.scene.cursor.body.setVelocity(0);
       }
     }
