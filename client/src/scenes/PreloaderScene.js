@@ -5,6 +5,7 @@ import tiles from '../assets/map/spritesheet-extruded.png';
 import tilemap from '../assets/map/map.json';
 import playerSpritesheet from '../assets/spritesheets/RPG_assets.png';
 import rotmgPlayerSpritesheet from '../assets/spritesheets/players.png';
+import slimeSpritesheet from '../assets/spritesheets/slime.png';
 import knife from '../assets/weapons/knife.png';
 
 class PreloaderScene extends Phaser.Scene {
@@ -26,6 +27,10 @@ class PreloaderScene extends Phaser.Scene {
       frameHeight: 16,
     });
     this.load.spritesheet('rotmgPlayer', rotmgPlayerSpritesheet, {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
+    this.load.spritesheet('slime', slimeSpritesheet, {
       frameWidth: 16,
       frameHeight: 16,
     });

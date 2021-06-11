@@ -2,7 +2,9 @@ import Phaser from 'phaser';
 
 import '../entities/Player';
 import '../entities/Weapon';
+import '../entities/Enemy';
 import createPlayerAnims from '../anims/PlayerAnims';
+import createSlimeAnims from '../anims/SlimeAnims';
 
 import {
   SCALE,
@@ -10,6 +12,7 @@ import {
   USE_CUSTOM_CURSOR,
 } from '../constants';
 import Weapon from '../entities/Weapon';
+import Enemy from '../entities/Enemy';
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -37,6 +40,7 @@ class GameScene extends Phaser.Scene {
 
     // create animations
     createPlayerAnims(this.anims);
+    createSlimeAnims(this.anims);
 
     // Create server weapons
     this.weapons = Weapon.CreateServerWeapons(this);
@@ -47,6 +51,17 @@ class GameScene extends Phaser.Scene {
       maxSize: 200,
     });
     this.physics.add.collider(this.bullets, obstaclesLayer, this.handleBulletObstacleCollision, undefined, this);
+
+    // Create enemies
+    this.enemies = this.physics.add.group({
+      classType: Phaser.Physics.Arcade.Sprite,
+      maxSize: 200,
+    });
+    this.physics.add.collider(this.enemies, obstaclesLayer);
+
+    // TESTING create one slime
+    const slime = this.add.enemy(400, 400, 'slime');
+    this.enemies.add(slime);
 
     // listen for web socket events
     this.socket.on(
@@ -148,12 +163,22 @@ class GameScene extends Phaser.Scene {
         this.cameras.main.rotation -= ROT_SPEED;
         if (USE_CUSTOM_CURSOR) this.cursor.rotation += ROT_SPEED;
         this.player.rotation += ROT_SPEED;
+        this.enemies.getChildren().forEach((enemy) => {
+          enemy.rotation += ROT_SPEED;
+        });
       } else if (ccwDown) {
         this.cameras.main.rotation += ROT_SPEED;
         if (USE_CUSTOM_CURSOR) this.cursor.rotation -= ROT_SPEED;
         this.player.rotation -= ROT_SPEED;
+        this.enemies.getChildren().forEach((enemy) => {
+          enemy.rotation -= ROT_SPEED;
+        });
       }
     }
+
+    this.enemies.getChildren().forEach((enemy) => {
+      enemy.update();
+    });
   }
 }
 

@@ -22,10 +22,13 @@ class Weapon {
 		return weapons;
 	}
 
-	constructor(type, scene, socket) {
+	constructor(type, scene, socket, overwrite) {
 		this.socket = socket;
 		this.scene = scene;
-		this.data = getWeapon(type);
+		this.data = {
+			...getWeapon(type),
+			...overwrite,
+		};
 		this.isServerWeapon = !socket;
 
 		this.nextShotTime = 0;

@@ -1,0 +1,24 @@
+default:
+  id: 'default' # id should be the same as the key
+  texture: ''
+
+slime:
+  id: 'slime'
+  texture: 'slime'
+  size: 1
+  behavior:
+    shoot:
+      - type: 'Shoot'
+        range: 70
+        weapon:
+          id: 'knife'
+          fireRate: 1
+          range: 40
+          speed: 100
+          size: 0.4
+    idle:
+      - type: 'Follow'
+        range: 70
+        speed: 20
+      - type: 'Wander'
+        speed: 15
