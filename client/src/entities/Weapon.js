@@ -32,7 +32,7 @@ class Weapon {
 	}
 
 	// Ignore fire restrictions if server weapon
-	fire = (x1, y1, x2, y2, rotation) => {
+	fire = (x1, y1, x2, y2, rotation, starttime = Date.now()) => {
 		if (
       !this.scene ||
       !this.scene.input ||
@@ -57,15 +57,27 @@ class Weapon {
 			// Fire weapon
 			bullet.setRotation(theta);
 			bullet.setScale(SCALE * this.data.size);
+			bullet.setVelocity(velR.x, velR.y);
 			bullet.setActive(true);
 			bullet.setVisible(true);
-			bullet.setVelocity(velR.x, velR.y);
+
+			// Set timed event to kill the bullet at range
+			const delay = this.data.range * SCALE / this.data.speed;
+			const networkBuffer = Date.now() - starttime;
+			this.scene.time.delayedCall(delay * 1000 - networkBuffer, () => {
+				if (bullet) {
+					bullet.setActive(false);
+					bullet.setVisible(false);
+					bullet.destroy();
+				}
+			});
 
 			if (!this.isServerWeapon) {
 				// Emit shoot event
 				this.socket.emit('playerShoot', {
 					type: this.data.id,
 					rotation: theta,
+					starttime: Date.now(),
 					x1,
 					y1,
 					x2,

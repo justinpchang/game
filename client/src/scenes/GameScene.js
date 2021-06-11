@@ -93,8 +93,8 @@ class GameScene extends Phaser.Scene {
       }
     );
 
-    this.socket.on('playerShot', ({ type, rotation, x1, y1, x2, y2 }) => {
-      this.weapons[type].fire(x1, y1, x2, y2, rotation);
+    this.socket.on('playerShot', ({ type, rotation, starttime, x1, y1, x2, y2 }) => {
+      this.weapons[type].fire(x1, y1, x2, y2, rotation, starttime);
     });
 
     // capture pointer and get custom cursor
