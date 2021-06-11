@@ -38,7 +38,7 @@ class GameScene extends Phaser.Scene {
 
     // create knives
     this.knives = this.physics.add.group({
-      classType: Phaser.Physics.Arcade.Image,
+      classType: Phaser.Physics.Arcade.Sprite,
       maxSize: 100,
     });
     this.physics.add.collider(this.knives, obstaclesLayer, this.handleKnifeObstacleCollision, undefined, this);
@@ -153,11 +153,11 @@ class GameScene extends Phaser.Scene {
       const cwDown = this.input.keyboard.addKey('E').isDown;
       if (cwDown) {
         this.cameras.main.rotation -= ROT_SPEED;
-        this.cursor.rotation += ROT_SPEED;
+        if (USE_CUSTOM_CURSOR) this.cursor.rotation += ROT_SPEED;
         this.player.rotation += ROT_SPEED;
       } else if (ccwDown) {
         this.cameras.main.rotation += ROT_SPEED;
-        this.cursor.rotation -= ROT_SPEED;
+        if (USE_CUSTOM_CURSOR) this.cursor.rotation -= ROT_SPEED;
         this.player.rotation -= ROT_SPEED;
       }
     }
