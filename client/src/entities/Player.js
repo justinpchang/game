@@ -6,64 +6,25 @@ import {
   MOVE_SPEED,
   USE_CUSTOM_CURSOR,
 } from '../constants';
+import Weapon from './Weapon';
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(socket, scene, x, y, texture, frame) {
     super(scene, x, y, texture, frame);
 
     this.scene = scene;
-    this.knives = null;
     this.nextShotTime = 0;
     this.isShooting = false;
     this.keepShooting = false;
+
+    // Add weapon to the player
+    this.weapon = new Weapon('knife', scene, socket);
 
     // update server with info
     this.socket = socket;
 
     // play idle animation
     this.anims.play('player-idle', true);
-  }
-
-  throwKnife = (mousePointer) => {
-    if (!this.knives) {
-      return;
-    }
-
-    this.isShooting = true;
-
-    // restrict fire rate
-    if (this.nextShotTime < Date.now()) {
-      // calculate throw angle
-      const targetX = USE_CUSTOM_CURSOR ? this.scene.cursor.x : mousePointer.worldX;
-      const targetY = USE_CUSTOM_CURSOR ? this.scene.cursor.y : mousePointer.worldY;
-      const theta = Phaser.Math.Angle.Between(this.x, this.y, targetX, targetY);
-      let velR = new Phaser.Math.Vector2();
-      velR.setToPolar(theta, MOVE_SPEED * 1.5);
-
-      // fire bullet
-      const knife = this.knives.get(this.x, this.y, 'knife');
-      if (!knife) {
-        return;
-      }
-      knife.rotation = theta;
-      knife.setScale(SCALE);
-      knife.setActive(true);
-      knife.setVisible(true);
-      knife.setVelocity(velR.x, velR.y);
-
-      // emit shoot event
-      this.socket.emit('playerShoot', {
-        x: knife.x,
-        y: knife.y,
-        rotation: knife.rotation,
-        scale: knife.scale,
-        velocityX: velR.x,
-        velocityY: velR.y,
-      });
-
-      // set time for next bullet
-      this.nextShotTime = Date.now() + 300;
-    }
   }
 
   update({ keyboard, mousePointer }) {
@@ -151,7 +112,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     // handle knife
     if (shootDown || this.keepShooting) {
-      this.throwKnife(mousePointer);
+      const x1 = this.x;
+      const y1 = this.y
+      const x2 = USE_CUSTOM_CURSOR ? this.scene.cursor.x : mousePointer.worldX;
+      const y2 = USE_CUSTOM_CURSOR ? this.scene.cursor.y : mousePointer.worldY;
+      this.weapon.fire(x1, y1, x2, y2);
     } else {
       this.isShooting = false;
     }

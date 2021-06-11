@@ -1,0 +1,23 @@
+default:
+  id: ''        # id should be the same as the name of the weapon object
+  texture: ''   # the name of the loaded asset
+  size: 1       # 1 is regular size
+  speed: 100    # player speed is around 100
+  damage: 1     # amount of base hp reduction on impact
+  fireRate: 1   # rounds per second
+
+knife:
+  id: 'knife'
+  texture: 'knife'
+  size: 1
+  speed: 150
+  damage: 3
+  fireRate: 3
+
+gun:
+  id: 'gun'
+  texture: 'gun'
+  size: 0.9
+  speed: 300
+  damage: 10
+  fireRate: 1

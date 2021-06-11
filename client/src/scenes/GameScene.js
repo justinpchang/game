@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 
 import '../entities/Player';
+import '../entities/Weapon';
 import createPlayerAnims from '../anims/PlayerAnims';
 
 import {
@@ -8,6 +9,7 @@ import {
   ROT_SPEED,
   USE_CUSTOM_CURSOR,
 } from '../constants';
+import Weapon from '../entities/Weapon';
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -36,12 +38,15 @@ class GameScene extends Phaser.Scene {
     // create animations
     createPlayerAnims(this.anims);
 
-    // create knives
-    this.knives = this.physics.add.group({
+    // Create server weapons
+    this.weapons = Weapon.CreateServerWeapons(this);
+
+    // Create bullets
+    this.bullets = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Sprite,
-      maxSize: 100,
+      maxSize: 200,
     });
-    this.physics.add.collider(this.knives, obstaclesLayer, this.handleKnifeObstacleCollision, undefined, this);
+    this.physics.add.collider(this.bullets, obstaclesLayer, this.handleBulletObstacleCollision, undefined, this);
 
     // listen for web socket events
     this.socket.on(
@@ -50,7 +55,6 @@ class GameScene extends Phaser.Scene {
         Object.keys(players).forEach((id) => {
           if (players[id].playerId === this.socket.id) {
             this.player = this.add.player(this.socket, players[id].x, players[id].y, 'player');
-            this.player.knives = this.knives;
             this.cameras.main.startFollow(this.player, true);
             this.physics.add.collider(this.player, obstaclesLayer);
           } else {
@@ -89,20 +93,9 @@ class GameScene extends Phaser.Scene {
       }
     );
 
-    this.socket.on(
-      'playerShot',
-      (shotInfo) => {
-        const knife = this.knives.get(shotInfo.x, shotInfo.y, 'knife');
-        if (!knife) {
-          return;
-        }
-        knife.setRotation(shotInfo.rotation);
-        knife.setScale(shotInfo.scale);
-        knife.setVelocity(shotInfo.velocityX, shotInfo.velocityY);
-        knife.setVisible(true);
-        knife.setActive(true);
-      }
-    );
+    this.socket.on('playerShot', ({ type, rotation, x1, y1, x2, y2 }) => {
+      this.weapons[type].fire(x1, y1, x2, y2, rotation);
+    });
 
     // capture pointer and get custom cursor
     if (USE_CUSTOM_CURSOR) {
@@ -124,8 +117,8 @@ class GameScene extends Phaser.Scene {
     });
   }
 
-  handleKnifeObstacleCollision(obj1, obj2) {
-    this.knives.killAndHide(obj1);
+  handleBulletObstacleCollision(obj1, obj2) {
+    this.bullets.killAndHide(obj1);
   }
 
   getOtherPlayer(playerId) {
