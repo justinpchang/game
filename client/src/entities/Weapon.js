@@ -62,6 +62,7 @@ class Weapon {
 			bullet.setVisible(true);
 
 			// Set timed event to kill the bullet at range
+			// Correct for network delay using starttime
 			const delay = this.data.range * SCALE / this.data.speed;
 			const networkBuffer = Date.now() - starttime;
 			this.scene.time.delayedCall(delay * 1000 - networkBuffer, () => {
